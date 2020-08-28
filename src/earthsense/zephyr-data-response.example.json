@@ -1,0 +1,331 @@
+{
+    "info": {
+        "narrative": [
+            "<p>API version: 3.7.2 </p>",
+            "<p>Query: /dataForViewBySlots/usernamehere/userkeyhere/469/20200827143940/20200827144000/AB/def/0</p>",
+            "Data source notes: New live Aurora DB aqdb7 - APIServer_1<br>",
+            "Configuration info:",
+            "</p>",
+            "<p style=\"margin-left: 40px\">BICMappings:",
+            "</p>",
+            "<p style=\"margin-left: 80px\">Slot 0: empty during entire period",
+            "<p style=\"margin-left: 80px\">Slot 1:",
+            "</p>",
+            "<p style=\"margin-left: 120px\">BIC1226 from 2020-08-27 14:39:40+00:00 to 2020-08-27 14:40:00+00:00",
+            "</p>",
+            "</p>",
+            "</p>",
+            "Acquiring raw data and generating calibrated data for slot 1",
+            "</p>",
+            "<p style=\"margin-left: 40px\">Getting raw data for slot 1 between 2020-08-27 14:39:40+00:00 and 2020-08-27 14:40:00+00:00...",
+            "</p>",
+            "<p style=\"margin-left: 80px\">1 ownership periods found.",
+            "<p style=\"margin-left: 80px\">Ownership period: 2020-03-06 09:00:00+00:00 to None - effective between 2020-08-27 14:39:40+00:00 and 2020-08-27 14:40:00+00:00",
+            "</p>",
+            "<p style=\"margin-left: 120px\">Slot  1 - raw data loaded - 2 rows dated from 2020-08-27 14:39:44+00:00 to 2020-08-27 14:39:54+00:00",
+            "</p>",
+            "</p>",
+            "<p style=\"margin-left: 40px\">Converting data produced by BIC1226 from 2020-08-27 14:39:40+00:00 to 2020-08-27 14:40:00+00:00",
+            "</p>",
+            "<p style=\"margin-left: 80px\">Running calibration thread 16:",
+            "</p>",
+            "<p style=\"margin-left: 120px\">Applicable calibration sets:",
+            "</p>",
+            "<p style=\"margin-left: 160px\">calibration set for BIC1226, index 0, valid 2020-02-18 10:00:00+00:00 ongoing (dbID=2822, cc: [3.6, 0.23, 0.0055, 4.262, 0.2436, 0.006, 9.544, 0.368, 0.003])",
+            "</p>",
+            "<p style=\"margin-left: 120px\">Converting from measurement 0 (at 2020-08-27 14:39:44+00:00)",
+            "<p style=\"margin-left: 120px\">Using CDG 33 (Non-linear PMS5003) with calibration set for BIC1226, index 0, valid 2020-02-18 10:00:00+00:00 ongoing (dbID=2822, cc: [3.6, 0.23, 0.0055, 4.262, 0.2436, 0.006, 9.544, 0.368, 0.003]) for raw data at 2020-08-27 14:39:44+00:00 onwards",
+            "<p style=\"margin-left: 120px\">Converted 1 measurements",
+            "</p>",
+            "<p style=\"margin-left: 80px\">Running calibration thread 1:",
+            "</p>",
+            "<p style=\"margin-left: 120px\">Applicable calibration sets:",
+            "</p>",
+            "<p style=\"margin-left: 160px\">calibration set for BIC1226, index 0, valid 2020-02-18 10:00:00+00:00 ongoing (dbID=2819, cc: [-0.5, -0.5, 0.3, 0.0, -273.367, -283.0, -50.0, -846.0])",
+            "</p>",
+            "<p style=\"margin-left: 120px\">Converting from measurement 0 (at 2020-08-27 14:39:44+00:00)",
+            "<p style=\"margin-left: 120px\">Using CDG 20 (Standard NO2) with calibration set for BIC1226, index 0, valid 2020-02-18 10:00:00+00:00 ongoing (dbID=2819, cc: [-0.5, -0.5, 0.3, 0.0, -273.367, -283.0, -50.0, -846.0]) for raw data at 2020-08-27 14:39:44+00:00 onwards",
+            "<p style=\"margin-left: 120px\">Converted 1 measurements",
+            "</p>",
+            "<p style=\"margin-left: 80px\">Running calibration thread 2:",
+            "</p>",
+            "<p style=\"margin-left: 120px\">Applicable calibration sets:",
+            "</p>",
+            "<p style=\"margin-left: 160px\">calibration set for BIC1226, index 0, valid 2020-02-18 10:00:00+00:00 ongoing (dbID=2820, cc: [0.0, 0.0, -0.3, 0.25, 152.056])",
+            "</p>",
+            "<p style=\"margin-left: 120px\">Converting from measurement 0 (at 2020-08-27 14:39:44+00:00)",
+            "<p style=\"margin-left: 120px\">Using CDG 21 (Standard O3) with calibration set for BIC1226, index 0, valid 2020-02-18 10:00:00+00:00 ongoing (dbID=2820, cc: [0.0, 0.0, -0.3, 0.25, 152.056]) for raw data at 2020-08-27 14:39:44+00:00 onwards",
+            "<p style=\"margin-left: 120px\">Converted 1 measurements",
+            "</p>",
+            "<p style=\"margin-left: 80px\">Running calibration thread 9:",
+            "</p>",
+            "<p style=\"margin-left: 120px\">Applicable calibration sets:",
+            "</p>",
+            "<p style=\"margin-left: 160px\">calibration set for BIC1226, index 0, valid 2020-02-18 10:00:00+00:00 ongoing (dbID=2821, cc: [4.983, -0.345, 0.048, -0.009, -283.0, -4276.22])",
+            "</p>",
+            "<p style=\"margin-left: 120px\">Converting from measurement 0 (at 2020-08-27 14:39:44+00:00)",
+            "<p style=\"margin-left: 120px\">Using CDG 25 (Standard NO) with calibration set for BIC1226, index 0, valid 2020-02-18 10:00:00+00:00 ongoing (dbID=2821, cc: [4.983, -0.345, 0.048, -0.009, -283.0, -4276.22]) for raw data at 2020-08-27 14:39:44+00:00 onwards",
+            "<p style=\"margin-left: 120px\">Converted 1 measurements",
+            "</p>",
+            "</p>",
+            "</p>",
+            "Processing data for CTV def",
+            "</p>",
+            "<p style=\"margin-left: 40px\">Using processor chain 5 and packager 0",
+            "</p>",
+            "<p style=\"margin-left: 80px\">Processing calibrated data with CDGProcessorSanitizer_NoPMCeiling",
+            "<p style=\"margin-left: 80px\">Averaging calibrated data with CDGAverager_rev1 with averaging parameters = {averaging period = None secs; averagingStartAfterEpoch = None secs}",
+            "<p style=\"margin-left: 80px\">Processing calibrated data with CDGProcessorSanitizer_NoPMCeiling",
+            "<p style=\"margin-left: 80px\">Processing calibrated data with CDGProcessorSanitizer_NoPMCeiling",
+            "<p style=\"margin-left: 80px\">Averaging calibrated data with CDGAverager_rev1 with averaging parameters = {averaging period = None secs; averagingStartAfterEpoch = None secs}",
+            "<p style=\"margin-left: 80px\">Processing calibrated data with CDGProcessorSanitizer_NoPMCeiling",
+            "</p>",
+            "</p>"
+        ],
+        "timings": {
+            "generateCalibratedData": 0.0,
+            "getRawData": 0.031231
+        },
+        "errors": [],
+        "indent": 0,
+        "datahash": "d008301a"
+    },
+    "errorDesc": null,
+    "slotA": null,
+    "queryInfo": {
+        "startDT": "20200827143940",
+        "ZephyrID": "469",
+        "userName": "usernamehere",
+        "userKey": "userkeyhere",
+        "view": "def",
+        "averaging": "0",
+        "endDT": "20200827144000"
+    },
+    "slotB": {
+        "particulatePM25": {
+            "header": {
+                "units": "ug/m3",
+                "label": "PM2.5",
+                "HTMLLabel": "PM<sub>2.5</sub>",
+                "CSVOrder": 12,
+                "key": "particulatePM25",
+                "group": "particulatePM"
+            },
+            "data_hash": "c77c96bc",
+            "data": [
+                6,
+                6
+            ]
+        },
+        "UTS": {
+            "header": {
+                "units": " ",
+                "label": "Timestamp-UTS",
+                "HTMLLabel": "Timestamp-UTS",
+                "CSVOrder": 1,
+                "key": "UTS",
+                "group": "UTS"
+            },
+            "data_hash": "a8fc5b80",
+            "data": [
+                1598539184,
+                1598539194
+            ]
+        },
+        "NO": {
+            "header": {
+                "units": "ug/m3",
+                "label": "NO",
+                "HTMLLabel": "NO",
+                "CSVOrder": 6,
+                "key": "NO",
+                "group": "NO"
+            },
+            "data_hash": "e710606a",
+            "data": [
+                0,
+                4
+            ]
+        },
+        "ambTempC": {
+            "header": {
+                "units": "C",
+                "label": "Ambient temp",
+                "HTMLLabel": "Ambient temp",
+                "CSVOrder": 16,
+                "key": "ambTempC",
+                "group": "ambTempC"
+            },
+            "data_hash": "48982c8d",
+            "data": [
+                14,
+                14
+            ]
+        },
+        "humidity": {
+            "header": {
+                "units": "%RH",
+                "label": "Humidity",
+                "HTMLLabel": "Humidity",
+                "CSVOrder": 3,
+                "key": "humidity",
+                "group": "humidity"
+            },
+            "data_hash": "506e0c05",
+            "data": [
+                87,
+                86
+            ]
+        },
+        "NO2": {
+            "header": {
+                "units": "ug/m3",
+                "label": "NO2",
+                "HTMLLabel": "NO<sub>2</sub>",
+                "CSVOrder": 4,
+                "key": "NO2",
+                "group": "NO2"
+            },
+            "data_hash": "81726fa7",
+            "data": [
+                27,
+                25
+            ]
+        },
+        "latitude": {
+            "header": {
+                "units": "degrees",
+                "label": "Latitude",
+                "HTMLLabel": "Latitude",
+                "CSVOrder": 9,
+                "key": "latitude",
+                "group": "latitude"
+            },
+            "data_hash": "c42baa3a",
+            "data": [
+                52.450895,
+                52.450895
+            ]
+        },
+        "O3": {
+            "header": {
+                "units": "ug/m3",
+                "label": "O3",
+                "HTMLLabel": "O<sub>3</sub>",
+                "CSVOrder": 5,
+                "key": "O3",
+                "group": "O3"
+            },
+            "data_hash": "af46b2fe",
+            "data": [
+                2,
+                2
+            ]
+        },
+        "particulatePM10": {
+            "header": {
+                "units": "ug/m3",
+                "label": "PM10",
+                "HTMLLabel": "PM<sub>10</sub>",
+                "CSVOrder": 13,
+                "key": "particulatePM10",
+                "group": "particulatePM"
+            },
+            "data_hash": "48982c8d",
+            "data": [
+                14,
+                14
+            ]
+        },
+        "dateTime": {
+            "header": {
+                "units": " ",
+                "label": "Timestamp",
+                "HTMLLabel": "Timestamp",
+                "CSVOrder": 0,
+                "key": "dateTime",
+                "group": "dateTime"
+            },
+            "data_hash": "a061f3e6",
+            "data": [
+                "2020-08-27T14:39:44+00:00",
+                "2020-08-27T14:39:54+00:00"
+            ]
+        },
+        "ambPressure": {
+            "header": {
+                "units": "Pa",
+                "label": "Ambient pressure",
+                "HTMLLabel": "Ambient pressure",
+                "CSVOrder": 18,
+                "key": "ambPressure",
+                "group": "ambPressure"
+            },
+            "data_hash": "7c96fa82",
+            "data": [
+                99376,
+                99376
+            ]
+        },
+        "ambHumidity": {
+            "header": {
+                "units": "%RH",
+                "label": "Ambient humidity",
+                "HTMLLabel": "Ambient humidity",
+                "CSVOrder": 17,
+                "key": "ambHumidity",
+                "group": "ambHumidity"
+            },
+            "data_hash": "3c0e9784",
+            "data": [
+                84,
+                84
+            ]
+        },
+        "longitude": {
+            "header": {
+                "units": "degrees",
+                "label": "Longitude",
+                "HTMLLabel": "Longitude",
+                "CSVOrder": 10,
+                "key": "longitude",
+                "group": "longitude"
+            },
+            "data_hash": "9d49a8be",
+            "data": [
+                -1.932965,
+                -1.93297
+            ]
+        },
+        "particulatePM1": {
+            "header": {
+                "units": "ug/m3",
+                "label": "PM1",
+                "HTMLLabel": "PM<sub>1</sub>",
+                "CSVOrder": 11,
+                "key": "particulatePM1",
+                "group": "particulatePM"
+            },
+            "data_hash": "21859924",
+            "data": [
+                5,
+                5
+            ]
+        },
+        "tempC": {
+            "header": {
+                "units": "C",
+                "label": "Temp",
+                "HTMLLabel": "Temp",
+                "CSVOrder": 2,
+                "key": "tempC",
+                "group": "tempC"
+            },
+            "data_hash": "48982c8d",
+            "data": [
+                14,
+                14
+            ]
+        }
+    }
+}
