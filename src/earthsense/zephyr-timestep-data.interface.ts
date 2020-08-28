@@ -1,4 +1,5 @@
 export interface ZephyrTimestepData {
+  cartridge: string, // e.g. 'standard-cartridge-slot-a'
   dateTime: Date,
   longitude: number,
   latitude: number,
