@@ -1,0 +1,49 @@
+{
+  "name": "zephyr-ingester",
+  "version": "1.0.0",
+  "description": "Pulls Zephyr data from the Earthsense API. Intended to be run as a cronjob.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "test": "LOGGER_ENABLED=false jest --runInBand --env=node",
+    "test-debug": "LOGGER_ENABLED=true LOGGER_FORMAT=terminal LOGGER_LEVEL=debug jest --runInBand --env=node",
+    "build": "rm -rf dist && tsc",
+    "build:start": "npm run build && npm start",
+    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "docker:build": "docker build -t gcr.io/urban-observatory/zephyr-ingester:$npm_package_version .",
+    "docker:push": "docker push gcr.io/urban-observatory/zephyr-ingester:$npm_package_version",
+    "dockerise": "npm run build && npm run docker:build && npm run docker:push"
+  },
+  "author": "Si Bell",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/birminghamurbanobservatory/zephyr-ingester.git"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "axios": "^0.20.0",
+    "bluebird": "^3.7.2",
+    "check-types": "^11.1.2",
+    "cls-hooked": "^4.2.2",
+    "date-fns": "^2.16.0",
+    "dotenv": "^8.2.0",
+    "event-stream": "github:birminghamurbanobservatory/event-stream#semver:^2.0.0",
+    "lodash": "^4.17.20",
+    "mongoose": "^5.10.1",
+    "node-logger": "github:birminghamurbanobservatory/node-logger#semver:^1.0.0",
+    "shortid": "^2.2.15"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.10",
+    "@types/lodash": "^4.14.160",
+    "@types/node": "^14.6.1",
+    "@typescript-eslint/eslint-plugin": "^3.10.1",
+    "@typescript-eslint/parser": "^3.10.1",
+    "eslint": "^7.7.0",
+    "jest": "^26.4.2",
+    "ts-jest": "^26.3.0",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.2"
+  }
+}

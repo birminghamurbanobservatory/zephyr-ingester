@@ -1,0 +1,34 @@
+{
+    "query": "CALL API_get_ZephyrsForUserRevA(\"UsernameWouldBeHere\", \"KeyWouldBeHere\");",
+    "userName": "UsernameWouldBeHere",
+    "usersZephyrs": {
+        "856": {
+            "zNumber": 362,
+            "connection": {
+                "lastDT": "2020-03-15Z14:17:39"
+            },
+            "location": {
+                "latLngAltered": "None",
+                "since": "2020-03-06 09:00:00",
+                "lat": "52.652643000",
+                "lng": "-1.133957000",
+                "desc": "OTS or Transit",
+                "locationType": 0
+            }
+        },
+        "901": {
+            "zNumber": 469,
+            "connection": {
+                "lastDT": "2020-08-27Z14:01:43"
+            },
+            "location": {
+                "latLngAltered": "None",
+                "since": "2020-08-06 14:41:36",
+                "lat": "52.450859070",
+                "lng": "-1.932933331",
+                "desc": "Automatic location",
+                "locationType": 2
+            }
+        }
+    }
+}
