@@ -95,7 +95,14 @@ export function reformatZephyrDataResponse(response: any): ZephyrTimestepData[] 
 
   const combined = concat(slotAData, slotBData);
 
-  return combined;
+  // Makes things a bit easier when converting this data to UO observations if I add the zNumber to each set of readings here.
+  const zNumber = Number(response.queryInfo.ZephyrID);
+  const timestepData = combined.map((item) => {
+    item.zNumber = zNumber;
+    return item;
+  });
+
+  return timestepData;
 
 }
 
@@ -136,7 +143,7 @@ export function processSlot(slotData: any, slotLetter: string): ZephyrTimestepDa
     return [];
   }
 
-  const cartridgeType = 'standard'; // TODO: set this as 'enhanced' if there variables that indicate this is the case
+  const cartridgeType = 'std'; // 'std' is short for standard. TODO: set this as 'enhanced' if there variables that indicate this is the case.
 
   // Now let's check each variable has data of the same length, otherwise you could end up matching measurements to the wrong timestamp.
   const dataLengths = interFormat.map((variable) => variable.data.length);

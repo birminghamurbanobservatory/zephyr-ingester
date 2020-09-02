@@ -45,7 +45,8 @@ describe('Testing of reformatZephyrDataResponse function', () => {
     
     const expected = [
       {
-        cartridge: 'standard-cartridge-slot-b',
+        zNumber: 469,
+        cartridge: 'std-cartridge-slot-b',
         dateTime: new Date('2020-08-27T14:39:44+00:00'),
         longitude: -1.932965,
         latitude: 52.450895,
@@ -62,7 +63,8 @@ describe('Testing of reformatZephyrDataResponse function', () => {
         ambTempC: 14
       },
       {
-        cartridge: 'standard-cartridge-slot-b',
+        zNumber: 469,
+        cartridge: 'std-cartridge-slot-b',
         dateTime: new Date('2020-08-27T14:39:54+00:00'),
         longitude: -1.93297,
         latitude: 52.450895,

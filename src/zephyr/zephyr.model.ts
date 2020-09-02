@@ -20,7 +20,7 @@ const schema = new mongoose.Schema({
   lastKnownLocation: {
     lat: Number,
     lng: Number,
-    description: String,
+    description: String, // e.g. "Automatic Location" or "OTS or Transit"
     since: Date,
   }
 });

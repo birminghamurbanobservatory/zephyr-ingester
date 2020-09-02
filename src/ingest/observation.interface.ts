@@ -1,4 +1,4 @@
-export interface ObservationClient {
+export interface Observation {
   madeBySensor?: string;
   hasResult?: Result;
   resultTime?: string;
