@@ -2,6 +2,7 @@ import {Observation} from './observation.interface';
 import {ZephyrTimestepData} from '../earthsense/zephyr-timestep-data.interface';
 import {sortBy} from 'lodash';
 import * as check from 'check-types';
+import {v4 as uuid} from 'uuid';
 
 export function convertUnaveragedZephyrTimestepDataToObservations(data: ZephyrTimestepData[]): Observation[] {
 
@@ -16,8 +17,17 @@ export function convertUnaveragedZephyrTimestepDataToObservations(data: ZephyrTi
     const slotSensorId = `zephyr-${timestep.zNumber}-${timestep.cartridge}`;
     const gpsSensorId = `zephyr-${timestep.zNumber}-gps-sensor`;
     const aggregation = 'instant';
+    // Decided the best approach was to add the Zephyr's GPS location to each observation, then the sensor-deployment-manager with its passLocationToObservations setting can decide if it wants to use these GPS readings or inherit the host platform's location instead. 
+    const location = {
+      id: uuid(),
+      validAt: resultTime,
+      geometry: {
+        type: 'Point',
+        coordinates: [timestep.longitude, timestep.latitude]
+      } 
+    };
 
-    // Make sure the location observation gets added to the observations array first to give the best chance of updating a host platform's location in the sensor-deployment-mananger before being inherited by following observations.
+    // Makes sense for the location observation to be added to the observations array first in case it is being used to update a platform's location in the sensor-deployment-manager.
     if (check.assigned(timestep.longitude) && check.assigned(timestep.longitude)) {
       observations.push({
         resultTime,
@@ -30,7 +40,8 @@ export function convertUnaveragedZephyrTimestepDataToObservations(data: ZephyrTi
         },
         observedProperty: 'location',
         madeBySensor: gpsSensorId,
-        aggregation
+        aggregation,
+        location
       });
     }
 
@@ -43,7 +54,8 @@ export function convertUnaveragedZephyrTimestepDataToObservations(data: ZephyrTi
         },
         madeBySensor: slotSensorId,
         observedProperty: 'ozone-mass-concentration',
-        aggregation
+        aggregation,
+        location
       });
     }
 
@@ -56,7 +68,8 @@ export function convertUnaveragedZephyrTimestepDataToObservations(data: ZephyrTi
         },
         madeBySensor: slotSensorId,
         observedProperty: 'nitrogen-monoxide-mass-concentration',
-        aggregation
+        aggregation,
+        location
       });
     }
 
@@ -69,7 +82,8 @@ export function convertUnaveragedZephyrTimestepDataToObservations(data: ZephyrTi
         },
         madeBySensor: slotSensorId,
         observedProperty: 'nitrogen-dioxide-mass-concentration',
-        aggregation
+        aggregation,
+        location
       });
     }
 
@@ -82,7 +96,8 @@ export function convertUnaveragedZephyrTimestepDataToObservations(data: ZephyrTi
         },
         madeBySensor: slotSensorId,
         observedProperty: 'pm1-mass-concentration',
-        aggregation
+        aggregation,
+        location
       });
     }
 
@@ -95,7 +110,8 @@ export function convertUnaveragedZephyrTimestepDataToObservations(data: ZephyrTi
         },
         madeBySensor: slotSensorId,
         observedProperty: 'pm2p5-mass-concentration',
-        aggregation
+        aggregation,
+        location
       });
     }
 
@@ -108,7 +124,8 @@ export function convertUnaveragedZephyrTimestepDataToObservations(data: ZephyrTi
         },
         madeBySensor: slotSensorId,
         observedProperty: 'pm10-mass-concentration',
-        aggregation
+        aggregation,
+        location
       });
     }
 
@@ -122,7 +139,8 @@ export function convertUnaveragedZephyrTimestepDataToObservations(data: ZephyrTi
         },
         madeBySensor: slotSensorId,
         observedProperty: 'relative-humidity',
-        aggregation
+        aggregation,
+        location
       });
     }
 
@@ -136,7 +154,8 @@ export function convertUnaveragedZephyrTimestepDataToObservations(data: ZephyrTi
         },
         madeBySensor: slotSensorId,
         observedProperty: 'air-temperature',
-        aggregation
+        aggregation,
+        location
       });
     }
 
@@ -149,7 +168,8 @@ export function convertUnaveragedZephyrTimestepDataToObservations(data: ZephyrTi
         },
         madeBySensor: slotSensorId,
         observedProperty: 'air-pressure', // appears to be station pressure not MSLP
-        aggregation
+        aggregation,
+        location
       });
     }
 

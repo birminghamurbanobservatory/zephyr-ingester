@@ -4,10 +4,10 @@ import * as logger from 'node-logger';
 import * as Promise from 'bluebird';
 import {ZephyrApp} from '../zephyr/zephyr-app.interface';
 import * as event from 'event-stream';
-import {updateZephyrsNotInLatestList, getZephyr} from '../zephyr/zephyr.service';
+import {updateZephyrsNotInLatestList, getZephyr, upsertZephyr} from '../zephyr/zephyr.service';
 import {sub} from 'date-fns';
 import {convertUnaveragedZephyrTimestepDataToObservations} from './observation.service';
-import {random} from 'lodash';
+import {last, cloneDeep} from 'lodash';
 
 
 export async function ingest(): Promise<void> {
@@ -38,7 +38,7 @@ export async function ingest(): Promise<void> {
 
 async function processZephyr(zephyr: ZephyrApp): Promise<void> {
 
-  logger.debug(`Processing zephyr ${zephyr.zNumber}`);
+  logger.debug(`---- Processing zephyr ${zephyr.zNumber} ----`);
 
   // See if we have a document in our database for this Zephyr.
   let zephyrOnRecord;
@@ -61,15 +61,26 @@ async function processZephyr(zephyr: ZephyrApp): Promise<void> {
     end: new Date()
   };
   const zephyrUnaveragedData = await getZephyrData(settings, config.earthsense);
+  logger.debug(`Got ${zephyrUnaveragedData.length} timesteps worth of unaveraged data.`);
 
   // Convert the readings into UO format.
   const observations = convertUnaveragedZephyrTimestepDataToObservations(zephyrUnaveragedData);
+  logger.debug(`Equating to ${observations.length} observations.`);
 
-  // Update the Zephyr document with the time of the latest reading
+  // Update the Zephyr document with the time of the latest reading and the location from the getZephyrList request
+  const zephyrToUpsert = cloneDeep(zephyr);
+  zephyrToUpsert.stillInEarthsenseList = true;
+  if (observations.length) {
+    // observations should already be sorted chronologically
+    const lastObs = last(observations);
+    zephyrToUpsert.timeOfLatestUnaveragedValue = new Date(lastObs.resultTime);
+  }
+  const upsertedZephyr = await upsertZephyr(zephyrToUpsert);
+  logger.debug('Zephyr upserted', upsertedZephyr);
 
   // Publish the observations
-  // Need to be really careful with the publication order here because for Zephyrs that are mobile the sensor-deployment-manager will be using the GPS readings to up the location of the platform which in turn will be used to update non-locational observations linked to this platform. Therefore you need to publish the timesteps in cronological order with the location observation first, potentially with delays in between so that the sensor-deployment-manager has time to update its platform location before non-location information arrives.
-
+  await publishObservations(observations);
+  
   return;
 
 }

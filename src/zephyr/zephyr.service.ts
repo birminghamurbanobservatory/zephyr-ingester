@@ -3,6 +3,7 @@ import {UpdateZephyrsNotInLatestListFail} from './errors/UpdateZephyrsNotInLates
 import {ZephyrApp} from './zephyr-app.interface';
 import {GetZephyrFail} from './errors/GetZephyrFail';
 import {ZephyrNotFound} from './errors/ZephyrNotFound';
+import {UpsertZephyrFail} from './errors/UpsertZephyrFail';
 
 
 export async function getZephyr(zNumber: number): Promise<ZephyrApp> {
@@ -21,7 +22,6 @@ export async function getZephyr(zNumber: number): Promise<ZephyrApp> {
   return zephyrDbToApp(zephyr);
 
 }
-
 
 
 export async function updateZephyrsNotInLatestList(zNumbersInList: number[]): Promise<number> {
@@ -44,6 +44,24 @@ export async function updateZephyrsNotInLatestList(zNumbersInList: number[]): Pr
 
   // Let's return the number of Zephyrs that matched (this is rather than .nModified which can be less that .n if the Zephyr already has stillInEarthsenseList set as false.)
   return result.n;
+
+}
+
+
+export async function upsertZephyr(zephyr: ZephyrApp): Promise<ZephyrApp> {
+
+  let upserted;
+  try {
+    upserted = await Zephyr.findOneAndUpdate(
+      {zNumber: zephyr.zNumber}, 
+      zephyr,
+      {new: true, upsert:true, runValidators: true}
+    ).exec();
+  } catch (err) {
+    throw new UpsertZephyrFail(undefined, err.message);
+  }
+
+  return zephyrDbToApp(upserted);
 
 }
 

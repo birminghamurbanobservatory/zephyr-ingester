@@ -21,10 +21,10 @@ interface PhenomenonTime {
 }
 
 interface Location {
-  id?: number;
+  id?: string;
   geometry: Geometry;
   height?: number;
-  validAt?: Date;
+  validAt?: string;
 }
 
 interface Geometry {

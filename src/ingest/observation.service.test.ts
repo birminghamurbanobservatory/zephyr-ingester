@@ -1,5 +1,5 @@
 import {convertUnaveragedZephyrTimestepDataToObservations} from './observation.service';
-
+import * as check from 'check-types';
 
 describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function', () => {
 
@@ -44,6 +44,26 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
       },
     ];
 
+    const observations = convertUnaveragedZephyrTimestepDataToObservations(data);
+
+    const locationAtFirstTimestep = observations.find((obs) => {
+      return obs.resultTime === '2020-08-27T14:39:44.000Z' && obs.madeBySensor === 'zephyr-469-gps-sensor';
+    }).location;
+    expect(check.nonEmptyString(locationAtFirstTimestep.id)).toBe(true);
+    expect(check.nonEmptyString(locationAtFirstTimestep.validAt)).toBe(true);
+    expect(locationAtFirstTimestep.geometry).toEqual({
+      type: 'Point',
+      coordinates: [-1.932965, 52.450895]
+    });
+
+    const locationAtSecondTimestep = observations.find((obs) => {
+      return obs.resultTime === '2020-08-27T14:39:54.000Z' && obs.madeBySensor === 'zephyr-469-gps-sensor';
+    }).location;
+    expect(locationAtSecondTimestep.geometry).toEqual({
+      type: 'Point',
+      coordinates: [-1.93297, 52.450895]
+    });
+
     const expected = [
       {
         resultTime: '2020-08-27T14:39:44.000Z',
@@ -56,7 +76,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-gps-sensor',
         observedProperty: 'location',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtFirstTimestep
       },
       {
         resultTime: '2020-08-27T14:39:44.000Z',
@@ -66,7 +87,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'ozone-mass-concentration',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtFirstTimestep
       },
       {
         resultTime: '2020-08-27T14:39:44.000Z',
@@ -76,7 +98,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'nitrogen-monoxide-mass-concentration',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtFirstTimestep
       },
       {
         resultTime: '2020-08-27T14:39:44.000Z',
@@ -86,7 +109,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'nitrogen-dioxide-mass-concentration',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtFirstTimestep
       },
       {
         resultTime: '2020-08-27T14:39:44.000Z',
@@ -96,7 +120,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'pm1-mass-concentration',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtFirstTimestep
       },
       {
         resultTime: '2020-08-27T14:39:44.000Z',
@@ -106,7 +131,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'pm2p5-mass-concentration',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtFirstTimestep
       },
       {
         resultTime: '2020-08-27T14:39:44.000Z',
@@ -116,7 +142,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'pm10-mass-concentration',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtFirstTimestep
       },
       {
         resultTime: '2020-08-27T14:39:44.000Z',
@@ -126,7 +153,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'relative-humidity',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtFirstTimestep
       },
       {
         resultTime: '2020-08-27T14:39:44.000Z',
@@ -136,7 +164,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'air-temperature',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtFirstTimestep
       },
       {
         resultTime: '2020-08-27T14:39:44.000Z',
@@ -146,7 +175,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'air-pressure',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtFirstTimestep
       },
       {
         resultTime: '2020-08-27T14:39:54.000Z',
@@ -159,7 +189,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-gps-sensor',
         observedProperty: 'location',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtSecondTimestep
       },
       {
         resultTime: '2020-08-27T14:39:54.000Z',
@@ -169,7 +200,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'ozone-mass-concentration',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtSecondTimestep
       },
       {
         resultTime: '2020-08-27T14:39:54.000Z',
@@ -179,7 +211,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'nitrogen-monoxide-mass-concentration',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtSecondTimestep
       },
       {
         resultTime: '2020-08-27T14:39:54.000Z',
@@ -189,7 +222,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'nitrogen-dioxide-mass-concentration',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtSecondTimestep
       },
       {
         resultTime: '2020-08-27T14:39:54.000Z',
@@ -199,7 +233,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'pm1-mass-concentration',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtSecondTimestep
       },
       {
         resultTime: '2020-08-27T14:39:54.000Z',
@@ -209,7 +244,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'pm2p5-mass-concentration',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtSecondTimestep
       },
       {
         resultTime: '2020-08-27T14:39:54.000Z',
@@ -219,7 +255,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'pm10-mass-concentration',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtSecondTimestep
       },
       {
         resultTime: '2020-08-27T14:39:54.000Z',
@@ -229,7 +266,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'relative-humidity',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtSecondTimestep
       },
       {
         resultTime: '2020-08-27T14:39:54.000Z',
@@ -239,7 +277,8 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'air-temperature',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtSecondTimestep
       },
       {
         resultTime: '2020-08-27T14:39:54.000Z',
@@ -249,11 +288,10 @@ describe('Testing of convertUnaveragedZephyrTimestepDataToObservations function'
         },
         madeBySensor: 'zephyr-469-std-cartridge-slot-b',
         observedProperty: 'air-pressure',
-        aggregation: 'instant'
+        aggregation: 'instant',
+        location: locationAtSecondTimestep
       }
     ];
-
-    const observations = convertUnaveragedZephyrTimestepDataToObservations(data);
 
     expect(observations).toEqual(expected);
 
