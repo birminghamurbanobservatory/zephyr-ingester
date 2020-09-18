@@ -12,11 +12,39 @@ const schema = new mongoose.Schema({
     type: Boolean,
     required: true
   },
-  // At somepoint we may also want to pull in the already averaged data that earthsense supplies through its API (e.g. 15 minute and 1 hour averages), so makes sense to be specific that this is time of the unaveraged value.
+  getUnaveragedData: {
+    type: Boolean,
+    default: false
+  },
+  get15MinAverageData: {
+    type: Boolean,
+    default: true
+  },
+  getHourlyAverageData: {
+    type: Boolean,
+    default: false
+  },
+  getDailyAverageData: {
+    type: Boolean,
+    default: false
+  },
   timeOfLatestUnaveragedValue: {
     type: Date,
     required: false // set as false incase we manage to get a zephyr, but it has no readings yet.
   },
+  timeOfLatest15MinAverageValue: {
+    type: Date,
+    required: false // set as false incase we manage to get a zephyr, but it has no readings yet.
+  },
+  timeOfLatestHourlyAverageValue: {
+    type: Date,
+    required: false // set as false incase we manage to get a zephyr, but it has no readings yet.
+  },
+  timeOfLatestDailyAverageValue: {
+    type: Date,
+    required: false // set as false incase we manage to get a zephyr, but it has no readings yet.
+  },
+  // This location comes from the Zephyr list request, rather from the data of an individual Zephyr.
   lastKnownLocation: {
     lat: Number,
     lng: Number,

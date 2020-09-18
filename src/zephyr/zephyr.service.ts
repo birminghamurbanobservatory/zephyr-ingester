@@ -55,7 +55,12 @@ export async function upsertZephyr(zephyr: ZephyrApp): Promise<ZephyrApp> {
     upserted = await Zephyr.findOneAndUpdate(
       {zNumber: zephyr.zNumber}, 
       zephyr,
-      {new: true, upsert:true, runValidators: true}
+      {
+        new: true, 
+        upsert:true, 
+        runValidators: true, 
+        setDefaultsOnInsert: true // need this for the defaults for fields such as getDailyAverageData to be added.
+      }
     ).exec();
   } catch (err) {
     throw new UpsertZephyrFail(undefined, err.message);

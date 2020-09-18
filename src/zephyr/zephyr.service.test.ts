@@ -5,6 +5,7 @@ import * as MongodbMemoryServer from 'mongodb-memory-server';
 import {upsertZephyr} from './zephyr.service';
 import {ZephyrApp} from './zephyr-app.interface';
 import Zephyr from './zephyr.model';
+import {cloneDeep} from 'lodash';
 
 describe('Testing of zephyr service', () => {
 
@@ -51,9 +52,19 @@ describe('Testing of zephyr service', () => {
       // Let's assume we weren't able to get any observations first time round and thus couldn't set timeOfLatestUnaveragedValue
     };
 
+    const defaults = {
+      getUnaveragedData: false,
+      get15MinAverageData: true,
+      getHourlyAverageData: false,
+      getDailyAverageData: false
+    };
+
+    // We expect some defaults to be added
+    const expectedInsertedZephyr = Object.assign({}, cloneDeep(zephyrToInsert), defaults);
+
     // Insert it
     const inserted = await upsertZephyr(zephyrToInsert);
-    expect(inserted).toEqual(zephyrToInsert);
+    expect(inserted).toEqual(expectedInsertedZephyr);
 
     // Now let's update it
     const zephyrToUpdate: ZephyrApp = {
@@ -69,8 +80,10 @@ describe('Testing of zephyr service', () => {
       timeOfLatestUnaveragedValue: new Date('2020-09-04T18:31:44.333Z')
     };
 
+    const expectedUpdatedZephyr = Object.assign({}, cloneDeep(zephyrToUpdate), defaults);
+
     const updated = await upsertZephyr(zephyrToUpdate);
-    expect(updated).toEqual(zephyrToUpdate);
+    expect(updated).toEqual(expectedUpdatedZephyr);
 
     // Check theres only 1 document in the database
     const zephyrs = await Zephyr.find({}).exec();

@@ -1,12 +1,12 @@
 import {config} from '../config';
-import {getZephyrList, getZephyrData} from '../earthsense/earthsense-api.service';
+import {getZephyrList, getZephyrData, getAveragedZephyrData} from '../earthsense/earthsense-api.service';
 import * as logger from 'node-logger';
 import * as Promise from 'bluebird';
 import {ZephyrApp} from '../zephyr/zephyr-app.interface';
 import * as event from 'event-stream';
 import {updateZephyrsNotInLatestList, getZephyr, upsertZephyr} from '../zephyr/zephyr.service';
 import {sub} from 'date-fns';
-import {convertUnaveragedZephyrTimestepDataToObservations} from './observation.service';
+import {convertAveragedZephyrTimestepDataToObservations, convertUnaveragedZephyrTimestepDataToObservations} from './observation.service';
 import {last, cloneDeep} from 'lodash';
 
 
@@ -41,7 +41,7 @@ async function processZephyr(zephyr: ZephyrApp): Promise<void> {
   logger.debug(`---- Processing zephyr ${zephyr.zNumber} ----`);
 
   // See if we have a document in our database for this Zephyr.
-  let zephyrOnRecord;
+  let zephyrOnRecord: ZephyrApp;
   try {
     zephyrOnRecord = await getZephyr(zephyr.zNumber);
   } catch (err) {
@@ -52,37 +52,195 @@ async function processZephyr(zephyr: ZephyrApp): Promise<void> {
     }
   }
 
-  const getReadingsFrom = zephyrOnRecord && zephyrOnRecord.timeOfLatestUnaveragedValue ? zephyrOnRecord.timeOfLatestUnaveragedValue : sub(new Date, {hours: 1});
-
-  // Get the unaveraged readings
-  const settings = {
-    zNumber: zephyr.zNumber,
-    start: getReadingsFrom,
-    end: new Date()
-  };
-  const zephyrUnaveragedData = await getZephyrData(settings, config.earthsense);
-  logger.debug(`Got ${zephyrUnaveragedData.length} timesteps worth of unaveraged data.`);
-
-  // Convert the readings into UO format.
-  const observations = convertUnaveragedZephyrTimestepDataToObservations(zephyrUnaveragedData);
-  logger.debug(`Equating to ${observations.length} observations.`);
-
-  // Update the Zephyr document with the time of the latest reading and the location from the getZephyrList request
   const zephyrToUpsert = cloneDeep(zephyr);
   zephyrToUpsert.stillInEarthsenseList = true;
-  if (observations.length) {
-    // observations should already be sorted chronologically
-    const lastObs = last(observations);
-    zephyrToUpsert.timeOfLatestUnaveragedValue = new Date(lastObs.resultTime);
+
+  //-------------------------------------------------
+  // Unaveraged Data
+  //-------------------------------------------------
+  if (zephyrOnRecord && zephyrOnRecord.getUnaveragedData) {
+      
+    let getReadingsFrom = sub(new Date, {hours: 1}); // set a default
+    if (zephyrOnRecord && zephyrOnRecord.timeOfLatestUnaveragedValue) {
+      const threshold = sub(new Date, {hours: 12});
+      if (zephyrOnRecord.timeOfLatestUnaveragedValue > threshold) {
+        getReadingsFrom = zephyrOnRecord.timeOfLatestUnaveragedValue;
+      } else {
+        // We don't want to go too far back in time otherwise the request to earthsense will take forever and there could be 10's of thousands of observations to process at once.
+        getReadingsFrom = threshold;
+      }
+    }
+
+    logger.debug(`Requesting unaveraged readings from ${getReadingsFrom.toISOString()}`);
+
+    // Get the unaveraged readings
+    const settings = {
+      zNumber: zephyr.zNumber,
+      start: getReadingsFrom,
+      end: new Date()
+    };
+    const zephyrUnaveragedData = await getZephyrData(settings, config.earthsense);
+    logger.debug(`Got ${zephyrUnaveragedData.length} timesteps worth of unaveraged data.`);
+
+    // Convert the readings into UO format.
+    const observations = convertUnaveragedZephyrTimestepDataToObservations(zephyrUnaveragedData);
+    logger.debug(`Equating to ${observations.length} observations.`);
+
+    if (observations.length) {
+      // observations should already be sorted chronologically
+      const lastObs = last(observations);
+      // This essentially sets the startDate for the next request.
+      zephyrToUpsert.timeOfLatestUnaveragedValue = new Date(lastObs.resultTime);
+    }
+
+    // Publish the observations
+    await publishObservations(observations);
+  
   }
+
+  //-------------------------------------------------
+  // 15 minute average data
+  //-------------------------------------------------
+  // Let's default to getting the 15 minute data for Zephyr's that aren't on record yet.
+  if (!zephyrOnRecord || (zephyrOnRecord && zephyrOnRecord.get15MinAverageData)) {
+
+    const averagedOver = '15Min';
+      
+    let getReadingsFrom = sub(new Date, {hours: 3}); // set a default
+    if (zephyrOnRecord && zephyrOnRecord.timeOfLatest15MinAverageValue) {
+      const threshold = sub(new Date, {weeks: 1}); // can get away with this being much longer than for 10 secondly data 
+      if (zephyrOnRecord.timeOfLatest15MinAverageValue > threshold) {
+        getReadingsFrom = zephyrOnRecord.timeOfLatest15MinAverageValue;
+      } else {
+        getReadingsFrom = threshold;
+      }
+    }
+
+    logger.debug(`Requesting ${averagedOver} readings from ${getReadingsFrom.toISOString()}`);
+
+    // Get the readings
+    const settings = {
+      zNumber: zephyr.zNumber,
+      start: getReadingsFrom,
+      end: new Date(),
+      averagedOver
+    };
+    const zephyrAveragedData = await getAveragedZephyrData(settings, config.earthsense);
+    logger.debug(`Got ${zephyrAveragedData.length} timesteps worth of ${averagedOver} data.`);
+
+    // Convert the readings into UO format.
+    const observations = convertAveragedZephyrTimestepDataToObservations(zephyrAveragedData, averagedOver);
+    logger.debug(`Equating to ${observations.length} observations.`);
+
+    if (observations.length) {
+      // observations should already be sorted chronologically
+      const lastObs = last(observations);
+      // This essentially sets the startDate for the next request.
+      zephyrToUpsert.timeOfLatest15MinAverageValue = new Date(lastObs.resultTime);
+    }
+
+    // Publish the observations
+    await publishObservations(observations);
+  
+  }
+
+  //-------------------------------------------------
+  // Hourly average data
+  //-------------------------------------------------
+  if (zephyrOnRecord && zephyrOnRecord.getHourlyAverageData) {
+
+    const averagedOver = 'hourly';
+      
+    let getReadingsFrom = sub(new Date, {days: 1}); // Needs to be a long enough timeframe that it's likely to find data.
+    if (zephyrOnRecord && zephyrOnRecord.timeOfLatestHourlyAverageValue) {
+      const threshold = sub(new Date, {months: 1}); // can get away with this being much longer than for 10 secondly data 
+      if (zephyrOnRecord.timeOfLatestHourlyAverageValue > threshold) {
+        getReadingsFrom = zephyrOnRecord.timeOfLatestHourlyAverageValue;
+      } else {
+        getReadingsFrom = threshold;
+      }
+    }
+
+    logger.debug(`Requesting ${averagedOver} readings from ${getReadingsFrom.toISOString()}`);
+
+    // Get the readings
+    const settings = {
+      zNumber: zephyr.zNumber,
+      start: getReadingsFrom,
+      end: new Date(),
+      averagedOver
+    };
+    const zephyrAveragedData = await getAveragedZephyrData(settings, config.earthsense);
+    logger.debug(`Got ${zephyrAveragedData.length} timesteps worth of ${averagedOver} data.`);
+
+    // Convert the readings into UO format.
+    const observations = convertAveragedZephyrTimestepDataToObservations(zephyrAveragedData, averagedOver);
+    logger.debug(`Equating to ${observations.length} observations.`);
+
+    if (observations.length) {
+      // observations should already be sorted chronologically
+      const lastObs = last(observations);
+      // This essentially sets the startDate for the next request.
+      zephyrToUpsert.timeOfLatestHourlyAverageValue = new Date(lastObs.resultTime);
+    }
+
+    // Publish the observations
+    await publishObservations(observations);
+  
+  }
+
+  //-------------------------------------------------
+  // Daily average data
+  //-------------------------------------------------
+  if (zephyrOnRecord && zephyrOnRecord.getDailyAverageData) {
+
+    const averagedOver = 'daily';
+      
+    let getReadingsFrom = sub(new Date, {weeks: 1}); // Needs to be a long enough timeframe that it's likely to find data.
+    if (zephyrOnRecord && zephyrOnRecord.timeOfLatestDailyAverageValue) {
+      const threshold = sub(new Date, {months: 3}); // can get away with this being much longer than for 10 secondly data 
+      if (zephyrOnRecord.timeOfLatestDailyAverageValue > threshold) {
+        getReadingsFrom = zephyrOnRecord.timeOfLatestDailyAverageValue;
+      } else {
+        getReadingsFrom = threshold;
+      }
+    }
+
+    logger.debug(`Requesting ${averagedOver} readings from ${getReadingsFrom.toISOString()}`);
+
+    // Get the readings
+    const settings = {
+      zNumber: zephyr.zNumber,
+      start: getReadingsFrom,
+      end: new Date(),
+      averagedOver
+    };
+    const zephyrAveragedData = await getAveragedZephyrData(settings, config.earthsense);
+    logger.debug(`Got ${zephyrAveragedData.length} timesteps worth of ${averagedOver} data.`);
+
+    // Convert the readings into UO format.
+    const observations = convertAveragedZephyrTimestepDataToObservations(zephyrAveragedData, averagedOver);
+    logger.debug(`Equating to ${observations.length} observations.`);
+
+    if (observations.length) {
+      // observations should already be sorted chronologically
+      const lastObs = last(observations);
+      // This essentially sets the startDate for the next request.
+      zephyrToUpsert.timeOfLatestDailyAverageValue = new Date(lastObs.resultTime);
+    }
+
+    // Publish the observations
+    await publishObservations(observations);
+  
+  }
+
+  //-------------------------------------------------
+  // Upsert Zephyr in database
+  //-------------------------------------------------
   const upsertedZephyr = await upsertZephyr(zephyrToUpsert);
   logger.debug('Zephyr upserted', upsertedZephyr);
-
-  // Publish the observations
-  await publishObservations(observations);
   
   return;
-
 }
 
 

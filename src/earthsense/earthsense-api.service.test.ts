@@ -1,6 +1,7 @@
 import exampleZephyrListResponse from './zephyr-list-response.example.json';
 import exampleZephyrDataResponse from './zephyr-data-response.example.json';
-import {reformatZephyrListResponse, convertToEarthsenseUrlDate, sinceStringToJavascriptDate, reformatZephyrDataResponse} from './earthsense-api.service';
+import exampleZephyr15MinAverageDataResponse from './zephyr-15-min-response.example.json';
+import {reformatZephyrListResponse, convertToEarthsenseUrlDate, sinceStringToJavascriptDate, reformatZephyrDataResponse, reformatZephyrAveragedDataResponse} from './earthsense-api.service';
 
 describe('Testing of reformatZephyrListResponse function', () => {
 
@@ -89,6 +90,58 @@ describe('Testing of reformatZephyrDataResponse function', () => {
 
 });
 
+
+
+describe('Testing of reformatZephyrAverageDataResponse function', () => {
+
+  test('Check it converts as expected', () => {
+    
+    // The first timestep from the response isn't expected because it's always just null values.
+    const expected = [
+      {
+        zNumber: 469,
+        cartridge: 'std-cartridge-slot-b',
+        dateTime: new Date('2020-08-27T12:45:00+00:00'),
+        longitude: -1.93294,
+        latitude: 52.450763,
+        o3: 9,
+        no: 4,
+        no2: 31,
+        pm1: 5,
+        pm2p5: 7,
+        pm10: 14,
+        humidity: 83,
+        ambHumidity: 81,
+        ambPressure: 99597,
+        tempC: 14,
+        ambTempC: 14
+      },
+      {
+        zNumber: 469,
+        cartridge: 'std-cartridge-slot-b',
+        dateTime: new Date('2020-08-27T13:00:00+00:00'),
+        longitude: -1.932934,
+        latitude: 52.450833,
+        o3: 8,
+        no: 4,
+        no2: 29,
+        pm1: 5,
+        pm2p5: 6,
+        pm10: 13,
+        humidity: 83,
+        ambHumidity: 81,
+        ambPressure: 99568,
+        tempC: 14,
+        ambTempC: 14
+      },
+    ];
+
+    const formattedData = reformatZephyrAveragedDataResponse(exampleZephyr15MinAverageDataResponse, '15 min average on the quarter hours');
+    expect(formattedData).toEqual(expected);
+
+  });
+
+});
 
 
 describe('Testing of convertToEarthsenseUrlDate function', () => {

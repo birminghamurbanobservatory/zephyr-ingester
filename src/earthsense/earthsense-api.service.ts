@@ -88,15 +88,89 @@ export async function getZephyrData(settings: {zNumber: number, start: Date, end
 }
 
 
-export function reformatZephyrDataResponse(response: any): ZephyrTimestepData[] {
+export function reformatZephyrDataResponse(responseBody: any): ZephyrTimestepData[] {
 
-  const slotAData = response.slotA ? processSlot(response.slotA, 'a') : [];
-  const slotBData = response.slotB ? processSlot(response.slotB, 'b') : [];
+  const slotAData = responseBody.slotA ? processSlot(responseBody.slotA, 'a') : [];
+  const slotBData = responseBody.slotB ? processSlot(responseBody.slotB, 'b') : [];
 
   const combined = concat(slotAData, slotBData);
 
   // Makes things a bit easier when converting this data to UO observations if I add the zNumber to each set of readings here.
-  const zNumber = Number(response.queryInfo.ZephyrID);
+  const zNumber = Number(responseBody.queryInfo.ZephyrID);
+  const timestepData = combined.map((item) => {
+    item.zNumber = zNumber;
+    return item;
+  });
+
+  return timestepData;
+
+}
+
+
+export async function getAveragedZephyrData(settings: {zNumber: number, start: Date, end: Date, averagedOver: string}, credentials: EarthsenseCredentials): Promise<ZephyrTimestepData[]> {
+
+  const averageChoices = {
+    '15Min': {
+      chainIdForUrl: '3',
+      keyInResponse: '15 min average on the quarter hours'
+    },
+    hourly: {
+      chainIdForUrl: '1',
+      keyInResponse: 'Hourly average on the hour'
+    },
+    daily: {
+      chainIdForUrl: '2',
+      keyInResponse: 'Daily average at midnight'
+    }
+  };
+
+  const averageChoice = averageChoices[settings.averagedOver];
+
+  if (!averageChoice) {
+    throw new Error(`${settings.averagedOver} is not a valid average choice.`);
+  }
+
+  let response;
+
+  const startInEarthsenseFormat = convertToEarthsenseUrlDate(settings.start);
+  const endInEarthsenseFormat = convertToEarthsenseUrlDate(settings.end);
+  const slots = 'AB';
+
+  try {
+    
+    // This gets the raw unaveraged data
+    response = await axios.get(
+      `https://data.earthsense.co.uk/dataForViewBySlotsAveraged/${credentials.username}/${credentials.key}/${settings.zNumber}/${startInEarthsenseFormat}/${endInEarthsenseFormat}/${slots}/def/${averageChoice.chainIdForUrl}/JSON/api`
+    );
+
+  } catch (err) {
+    throw new Error(`Failed to Zephyr Data from Earthsense API. Reason: ${err.message}`);
+  }
+
+  return reformatZephyrAveragedDataResponse(response.data, averageChoice.keyInResponse);
+
+}
+
+
+export function reformatZephyrAveragedDataResponse(responseBody: any, keyInResponse: string): ZephyrTimestepData[] {
+
+  const subSection = responseBody.data[keyInResponse];
+  if (!subSection) {
+    throw new Error(`Earthsense response is not as expected, there should be an object with a key of ${keyInResponse}.`);
+  }
+
+  // The slot data is more nested than in the unaveraged response, with a key specific to the average period.
+  const slotAData = subSection.slotA ? processSlot(subSection.slotA, 'a') : [];
+  const slotBData = subSection.slotB ? processSlot(subSection.slotB, 'b') : [];
+
+  // For some reason the earthsense API response for averaged data always has all null values for the first timestep. We'll therefore remove it here because it's useless.
+  slotAData.shift();
+  slotBData.shift();
+
+  const combined = concat(slotAData, slotBData);
+
+  // Add the zNumber to each set of readings to make things easier later.
+  const zNumber = Number(responseBody.queryInfo.ZephyrID);
   const timestepData = combined.map((item) => {
     item.zNumber = zNumber;
     return item;
