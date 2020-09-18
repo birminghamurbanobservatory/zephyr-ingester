@@ -1,6 +1,6 @@
 {
   "name": "zephyr-ingester",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Pulls Zephyr data from the Earthsense API. Intended to be run as a cronjob.",
   "main": "index.js",
   "scripts": {
